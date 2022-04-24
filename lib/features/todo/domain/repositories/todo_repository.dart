@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:todo_app_local/core/errors/failures.dart';
 
 import '../../data/models/todo_model.dart';

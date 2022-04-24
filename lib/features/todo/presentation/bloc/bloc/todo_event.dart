@@ -40,3 +40,12 @@ class IsReminderClicked extends TodoEvent {
     required this.todoModel,
   });
 }
+
+class ColorSelected extends TodoEvent {
+  final bool isColorSelected;
+  final Color? selectedColor;
+  const ColorSelected({
+    required this.isColorSelected,
+    this.selectedColor,
+  });
+}

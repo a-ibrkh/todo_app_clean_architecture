@@ -1,6 +1,9 @@
 import 'package:bloc/bloc.dart';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todo_app_local/core/keys/app_keys.dart';
 
 import '../../../data/models/todo_model.dart';
 import '../../../domain/repositories/todo_repository.dart';
@@ -63,5 +66,11 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     await repository.editTodo(
         todoModel:
             event.todoModel.copyWith(isReminder: !event.todoModel.isReminder));
+  }
+
+  @override
+  Future<void> close() async {
+    await Hive.close();
+    return super.close();
   }
 }
