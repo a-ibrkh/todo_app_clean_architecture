@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:todo_app_local/core/boxes/boxes.dart';
 import 'package:todo_app_local/core/errors/exceptions.dart';
 
@@ -37,7 +39,10 @@ class TodoLocalDatasourceImpl extends TodoLocalDatasource {
       {required TodoModel todoModel, bool? isDone, bool? isReminder}) async {
     todoModel.isDone = isDone ?? todoModel.isDone;
     todoModel.isReminder = isReminder ?? todoModel.isReminder;
-    await todoModel.save();
+    final modelKey = todoModel.key;
+    log(modelKey.toString());
+    box.put(modelKey, todoModel);
+    // await todoModel.save();
   }
 
   @override

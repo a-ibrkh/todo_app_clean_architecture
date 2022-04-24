@@ -6,6 +6,6 @@ import '../../data/models/todo_model.dart';
 abstract class TodoRepository {
   Future<void> addTodo({required TodoModel todoModel});
   Future<Either<FailureImpl, List<TodoModel>>> getTodos();
-  Future<void> editTodo({required TodoModel todoModel});
+  Future<void> editTodo({required TodoModel todoModel, bool? isDone, bool? isReminder});
   Future<void> deleteTodo({required TodoModel todoModel});
 }

@@ -27,8 +27,10 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
   @override
-  Future<void> editTodo({required TodoModel todoModel}) async {
-    await localDatasource.editMyTodo(todoModel: todoModel);
+  Future<void> editTodo(
+      {required TodoModel todoModel, bool? isDone, bool? isReminder}) async {
+    await localDatasource.editMyTodo(
+        todoModel: todoModel, isDone: isDone, isReminder: isReminder);
   }
 
   @override

@@ -9,6 +9,8 @@ import 'package:todo_app_local/features/todo/data/models/todo_model.dart';
 import 'package:todo_app_local/features/todo/presentation/screens/initial_screen.dart';
 import 'package:todo_app_local/injection_container.dart';
 
+import 'features/todo/presentation/bloc/bloc/color_date_bloc.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
@@ -23,8 +25,15 @@ class TodoApp extends StatelessWidget {
   const TodoApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<TodoBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<TodoBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<ColorDateBloc>(),
+        ),
+      ],
       child: MaterialApp(
         title: "To Do App",
         routes: AppScreens.screens,

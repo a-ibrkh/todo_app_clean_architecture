@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 
 import 'package:equatable/equatable.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app_local/core/keys/app_keys.dart';
 
+import '../../../../../core/boxes/boxes.dart';
 import '../../../data/models/todo_model.dart';
 import '../../../domain/repositories/todo_repository.dart';
 
@@ -42,7 +45,9 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     failureOrList.fold((failure) async {
       emit(const Error(errorMessage: CACHEFAILUREMESSAGE));
     }, (listOfTodos) async {
-      emit(Loaded(listOfTodos));
+      emit(
+        Loaded(listOfTodos.cast<TodoModel>()),
+      );
     });
   }
 
@@ -58,14 +63,13 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   Future<void> _isDoneClicked(
       IsDoneClicked event, Emitter<TodoState> emit) async {
     await repository.editTodo(
-        todoModel: event.todoModel.copyWith(isDone: !event.todoModel.isDone));
+        todoModel: event.todoModel, isDone: !event.todoModel.isDone);
   }
 
   Future<void> _isReminderClicked(
       IsReminderClicked event, Emitter<TodoState> emit) async {
     await repository.editTodo(
-        todoModel:
-            event.todoModel.copyWith(isReminder: !event.todoModel.isReminder));
+        todoModel: event.todoModel, isReminder: !event.todoModel.isReminder);
   }
 
   @override

@@ -43,6 +43,7 @@ class InitialScreen extends StatelessWidget {
                       "Get Started",
                       textAlign: TextAlign.center,
                       style: TextStyle(
+                        color: Colors.white,
                         fontFamily: "Rubik",
                         fontSize: 15,
                       ),

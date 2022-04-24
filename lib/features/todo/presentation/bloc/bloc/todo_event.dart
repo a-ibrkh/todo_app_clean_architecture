@@ -29,6 +29,7 @@ class DeleteTodo extends TodoEvent {
 
 class IsDoneClicked extends TodoEvent {
   final TodoModel todoModel;
+  
   const IsDoneClicked({
     required this.todoModel,
   });
@@ -41,11 +42,4 @@ class IsReminderClicked extends TodoEvent {
   });
 }
 
-class ColorSelected extends TodoEvent {
-  final bool isColorSelected;
-  final Color? selectedColor;
-  const ColorSelected({
-    required this.isColorSelected,
-    this.selectedColor,
-  });
-}
+

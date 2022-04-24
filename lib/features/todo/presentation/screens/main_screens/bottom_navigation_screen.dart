@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:todo_app_local/features/todo/data/models/todo_model.dart';
+import 'package:todo_app_local/features/todo/presentation/bloc/bloc/todo_bloc.dart';
 import 'package:todo_app_local/features/todo/presentation/screens/main_screens/home_screen.dart';
+import 'package:todo_app_local/features/todo/presentation/screens/main_screens/task_screen.dart';
 import 'package:todo_app_local/features/todo/presentation/widgets/categories_row.dart';
+
+import '../../bloc/bloc/color_date_bloc.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({Key? key}) : super(key: key);
@@ -13,10 +21,10 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     const HomeScreen(),
-    Container(color: Colors.lightGreenAccent),
+    const TaskScreen(),
   ];
   final taskController = TextEditingController();
-  bool isReminder = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +34,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
           Stack(
             children: [
               Container(
-                height: isReminder ? 238 : 106,
+                height: 106,
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -162,53 +170,193 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 44.0,
-                            ),
-                            const Text(
-                              "Add new task",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontFamily: "Rubik",
-                                  fontSize: 13.0,
-                                  fontWeight: FontWeight.w900),
-                            ),
-                            const SizedBox(
-                              height: 40.0,
-                            ),
-                            TextField(
-                              controller: taskController,
-                              cursorColor:
-                                  const Color.fromARGB(255, 53, 36, 56),
-                            ),
-                            const SizedBox(
-                              height: 10.0,
-                            ),
-                            CategoriesRow(),
-                            Expanded(
-                              child: SafeArea(
-                                child: Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context)
-                                                  .viewInsets
-                                                  .bottom +
-                                              10.0),
-                                      child: ElevatedButton(
-                                        onPressed: () {},
-                                        child: Container(
-                                          color: Colors.amber,
-                                          height: 52.0,
-                                          width: double.infinity,
-                                        ),
+                        child: BlocBuilder<ColorDateBloc, ColorDateState>(
+                          builder: (context, state) {
+                            if (state is ColorInitial) {
+                              return Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 44.0,
+                                  ),
+                                  const Text(
+                                    "Add new task",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontFamily: "Rubik",
+                                        fontSize: 13.0,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                  const SizedBox(
+                                    height: 40.0,
+                                  ),
+                                  TextField(
+                                    controller: taskController,
+                                    enabled: state.isColorSelected,
+                                    decoration: InputDecoration(
+                                        hintText: state.isColorSelected ?? false
+                                            ? "Add task"
+                                            : "Select color"),
+                                    cursorColor:
+                                        const Color.fromARGB(255, 53, 36, 56),
+                                  ),
+                                  const SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Container(
+                                    height: 2.0,
+                                    width: double.infinity,
+                                    color: state.selectedColor,
+                                  ),
+                                  const CategoriesRow(),
+                                  const SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Container(
+                                    height: 2.0,
+                                    width: double.infinity,
+                                    color: state.selectedColor,
+                                  ),
+                                  const SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  const Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "Choose date",
+                                      style: TextStyle(
+                                          fontFamily: "Rubik", fontSize: 13.0),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        DateFormat.yMMMMd().format(
+                                                state.dateTime ??
+                                                    DateTime.now()) +
+                                            " " +
+                                            DateFormat.jm().format(
+                                              state.dateTime ?? DateTime.now(),
+                                            ),
+                                        style: const TextStyle(
+                                            fontFamily: "Rubik",
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                    )),
-                              ),
-                            ),
-                          ],
+                                      IconButton(
+                                        onPressed: () {
+                                          DatePicker.showDateTimePicker(
+                                            context,
+                                            minTime: DateTime.now(),
+                                            onConfirm: (time) {
+                                              BlocProvider.of<ColorDateBloc>(
+                                                      context)
+                                                  .add(
+                                                ColorDateSelected(
+                                                    dateTime: time,
+                                                    selectedColor:
+                                                        state.selectedColor,
+                                                    isColorSelected:
+                                                        state.isColorSelected),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                      ),
+                                    ],
+                                  ),
+                                  Expanded(
+                                    child: SafeArea(
+                                      child: Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context)
+                                                      .viewInsets
+                                                      .bottom +
+                                                  10.0,
+                                              left: 10.0,
+                                              right: 10.0,
+                                            ),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                if (taskController
+                                                    .text.isNotEmpty) {
+                                                  BlocProvider.of<TodoBloc>(
+                                                          context)
+                                                      .add(
+                                                    AddTodo(
+                                                      todoModel: TodoModel(
+                                                        todoTitle:
+                                                            taskController.text,
+                                                        color: state
+                                                            .selectedColor!
+                                                            .value,
+                                                        isDone: false,
+                                                        isReminder: false,
+                                                        time: state.dateTime ??
+                                                            DateTime.now(),
+                                                      ),
+                                                    ),
+                                                  );
+                                                  taskController.clear();
+                                                  BlocProvider.of<
+                                                              ColorDateBloc>(
+                                                          context)
+                                                      .add(
+                                                          const ColorDateSelected(
+                                                              isColorSelected:
+                                                                  false));
+                                                  Navigator.of(context).pop();
+                                                }
+                                              },
+                                              child: Container(
+                                                child: const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 10.0),
+                                                  child: Text(
+                                                    "Add task",
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontFamily: "Rubik",
+                                                        fontSize: 18.0,
+                                                        fontWeight:
+                                                            FontWeight.w900),
+                                                  ),
+                                                ),
+                                                decoration: BoxDecoration(
+                                                    gradient:
+                                                        const LinearGradient(
+                                                      begin:
+                                                          Alignment.centerRight,
+                                                      end: Alignment.centerLeft,
+                                                      colors: [
+                                                        Color.fromRGBO(
+                                                            95, 135, 231, 1),
+                                                        Color.fromRGBO(
+                                                            126, 182, 255, 1)
+                                                      ],
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0)),
+                                                height: 53.0,
+                                                width: double.infinity,
+                                              ),
+                                            ),
+                                          )),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Container();
+                            }
+                          },
                         ),
                       ),
                     ),
@@ -223,6 +371,9 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                       child: FloatingActionButton(
                         onPressed: () {
                           Navigator.of(context).pop();
+                          BlocProvider.of<ColorDateBloc>(context).add(
+                              const ColorDateSelected(isColorSelected: false));
+                          taskController.clear();
                         },
                         backgroundColor: const Color.fromRGBO(248, 87, 195, 1),
                         child: const Icon(
